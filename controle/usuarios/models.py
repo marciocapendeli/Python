@@ -1,68 +1,73 @@
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import(
+    BaseUserManager,
+    AbstractBaseUser,
+    PermissionsMixin,
+)
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, email, password=None):
-        if not email:
-            raise ValueError('O Email deve ser fornecido')
         usuario = self.model(
-            email=self.normalize_email(email)
+            email = self.normalize_email(email)
         )
+
         usuario.is_active = True
         usuario.is_staff = False
         usuario.is_superuser = False
 
         if password:
             usuario.set_password(password)
-
-        usuario.save(using=self._db)
+        
+        usuario.save()
         return usuario
-
+    
     def create_superuser(self, email, password):
         usuario = self.create_user(
-            email=self.normalize_email(email),
-            password=password
-        )
+            email= self.normalize_email(email),
+            password= password,
+        ) 
+
         usuario.is_active = True
         usuario.is_staff = True
         usuario.is_superuser = True
 
         usuario.set_password(password)
 
-        usuario.save(using=self._db)
+        usuario.save()
         return usuario
+    
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
-        verbose_name="E-mail do usuário",
-        max_length=100,
-        unique=True
+        verbose_name= "E-mail do usuario",
+        max_length= 100,
+        unique= True,
     )
-    nome_completo = models.CharField(
-        verbose_name="Nome completo",
-        max_length=255,
-        blank=True
-    )
+
     is_active = models.BooleanField(
-        verbose_name="Usuário está ativo",
-        default=True
+        verbose_name= "Usuario esta ativo",
+        default= True,
     )
+
     is_staff = models.BooleanField(
-        verbose_name="Usuário é da equipe",
-        default=False
+        verbose_name= "Usuario é da equipe",
+        default= False,
     )
+
     is_superuser = models.BooleanField(
-        verbose_name="Usuário administrador",
-        default=False
+        verbose_name= "Usuario administrador",
+        default= False,
     )
 
     objects = UsuarioManager()
-    USERNAME_FIELD = 'email'
+
+    USERNAME_FIELD = "email"
 
     class Meta:
-        verbose_name = "Usuário"
-        verbose_name_plural = "Usuários"
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
         db_table = "usuario"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
+    
